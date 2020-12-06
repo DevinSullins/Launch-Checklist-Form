@@ -28,15 +28,15 @@ form.addEventListener("submit", (e) => {
       }
    };
    if (blanks > 0) {
-      alert("Blank field detected")
-      e.preventDefault()
+      alert("Blank field detected");
+      e.preventDefault();
    };
    if (!isNaN(Number(form.pilotName.value)) || !isNaN(Number(form.copilotName.value))){
-      alert(`Please enter Pilot and Copilot names, not ID numbers`)
-      e.preventDefault()
+      alert(`Please enter Pilot and Copilot names, not ID numbers`);
+      e.preventDefault();
    };
    if (isNaN(Number(form.fuelLevel.value)) || isNaN(Number(form.cargoMass.value))){
-      alert(`Fuel Level (L) and Cargo Mass (kg) must be submitted as numerical values`)
-      e.preventDefault()
+      alert(`Fuel Level (L) and Cargo Mass (kg) must be submitted as numerical values`);
+      e.preventDefault();
    };
 });
