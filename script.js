@@ -11,3 +11,25 @@
 </ol>
 <img src="${}">
 */
+
+
+let form = document.getElementById("fields");
+let fieldNames = [
+   form.pilotName,
+   form.copilotName,
+   form.fuelLevel,
+   form.cargoMass
+];
+form.addEventListener("submit", (e) => {
+   let blanks = 0
+   for (let field of fieldNames) {
+      if (field.value === ""){
+         blanks++
+      }
+   };
+   if (blanks > 0) {
+      alert("Blank field detected")
+      e.preventDefault()
+   };
+
+});
