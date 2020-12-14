@@ -23,16 +23,32 @@ let fieldNames = [
 let launchStatus = document.getElementById("launchStatus");
 let shuttleReady = "Shuttle ready for launch";
 let shuttleNotReady = "Shuttle not ready for launch";
+
 let launchReady = (e) => {
    launchStatus.innerText = shuttleReady;
    launchStatus.style.color = "green";
+   document.getElementById("faultyItems").style.visibility = "visible";
    e.preventDefault();
 };
+let planets = [] //to be filled with fetch below
+
+fetch('https://handlers.education.launchcode.org/static/planets.json').then((response) => {
+      response.json().then((json) => {
+            for (let planet of json){
+               planets.push(planet);
+            };
+      });
+});
+
 
 form.addEventListener("submit", (e) => {
+   //change pilot and copilot status
    document.getElementById("pilotStatus").innerText = `Pilot ${form.pilotName.value} Ready`;
    document.getElementById("copilotStatus").innerText = `Copilot ${form.copilotName.value} Ready`;
-   launchReady(e)
+
+   launchReady(e) //this runs hidden first and is changed below if data is invalid
+
+   //detect blanks and invalid data, throw alert if any blanks or invalid data
    let blanks = 0;
    for (let field of fieldNames) {
       if (field.value === ""){
@@ -49,6 +65,7 @@ form.addEventListener("submit", (e) => {
       alert(`Fuel Level (L) and Cargo Mass (kg) must be submitted as numerical values`);
       e.preventDefault();
    }
+   //validate and display fuelLevel value
    if (Number(form.fuelLevel.value) < 10000){
       // console.log(form.fuelLevel.value)
       launchStatus.innerText = shuttleNotReady;
@@ -61,7 +78,8 @@ form.addEventListener("submit", (e) => {
       e.preventDefault();
 
    }
-   
+
+   //validate and display cargoMass value
    if (Number(form.cargoMass.value) > 10000){
       // console.log(form.cargoMass.value)
       launchStatus.innerText = shuttleNotReady;
