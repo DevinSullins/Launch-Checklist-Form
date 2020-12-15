@@ -13,29 +13,6 @@
 */
 
 
-
-//get planet data
-
-// let getRandomPlanet = (planetArray) => {
-//    let randomNumber = Math.floor(Math.random() * planetArray.length)
-//    console.log(randomNumber)
-//    console.log(planetArray.randomNumber)
-//    return planetArray.randomNumber
-// }
-const fetchPlanets = async () => { 
-   try {
-      const response = await fetch('https://handlers.education.launchcode.org/static/planets.json');
-      let planets = await response.json();
-      let randomNumber = Math.floor(Math.random() * planets.length)
-      console.log(planets[randomNumber]);
-      return planets[randomNumber]
-   }
-   catch (err) {
-      console.error(err);
-   };
-}
-
-
 //status element to be filled in
 let launchStatus = document.getElementById("launchStatus");
 
@@ -50,6 +27,7 @@ let launchReady = (e) => {
    document.getElementById("faultyItems").style.visibility = "visible";
    e.preventDefault();
 };
+
 //function to run when invalid data is found
 let launchNotReady = (e) => {
    launchStatus.innerText = shuttleNotReady;
@@ -66,23 +44,11 @@ let fieldNames = [
    form.fuelLevel,
    form.cargoMass
 ];
-let missionBriefUpdate = async () => {
-   let planet = await fetchPlanets()
-   document.getElementById("missionTarget").innerHTML = 
-`<h2>Mission Destination</h2>
-<ol>
-<li>Name: ${planet.name}</li>
-<li>Diameter: ${planet.diameter}</li>
-<li>Star: ${planet.star}</li>
-<li>Distance from Earth: ${planet.distance}</li>
-<li>Number of Moons: ${planet.moons}</li>
-</ol>
-<img src="${planet.image}"></img>`
-}
-missionBriefUpdate()
-form.addEventListener("submit", async (e) => {
+console.log(form.cargoMass.value)
+form.addEventListener("submit", (e) => {
    
    launchReady(e) //this runs first and is changed below if data is invalid
+   
    //detect blanks and invalid data, throw alert if any blanks or invalid data
    document.getElementById("pilotStatus").innerText = `Pilot Not Ready`;
    document.getElementById("copilotStatus").innerText = `Copilot Not Ready`;
@@ -93,9 +59,10 @@ form.addEventListener("submit", async (e) => {
       if (field.value === ""){   
          alert("Blank field detected");    
          launchNotReady(e)       
+         break
       }
    }
- 
+   
    //validate and display copilot name
    if (typeof form.pilotName.value === "number" || form.pilotName.value === ''){
       alert(`Please enter valid Pilot Name`);
@@ -112,33 +79,59 @@ form.addEventListener("submit", async (e) => {
    }
    
    //validate and display fuelLevel value
-   let fuelStatus = document.getElementById("fuelStatus").innerText
    if (isNaN(Number(form.fuelLevel.value))){
       alert(`Fuel Level (L) must be submitted as a numerical value`);
-      fuelStatus = `Fuel Level "${form.fuelLevel.value}" invalid`
+      document.getElementById("fuelStatus").innerText = `Fuel Level "${form.fuelLevel.value}" invalid`
       launchNotReady(e)
    } else if (Number(form.fuelLevel.value) > 10000){
-      fuelStatus = `Fuel Level ${form.fuelLevel.value}L high enough for launch`;
+      document.getElementById("fuelStatus").innerText = `Fuel Level ${form.fuelLevel.value}L high enough for launch`;
       e.preventDefault();
    } else {
-      console.log(form.fuelLevel.value)
-      fuelStatus = `Fuel Level ${form.fuelLevel.value}L insufficient for launch`;
+      document.getElementById("fuelStatus").innerText = `Fuel Level ${form.fuelLevel.value}L insufficient for launch`;
       launchNotReady(e);     
-   }
+   };
    
    //validate and display cargoMass value
-   let cargoStatus = document.getElementById("cargoStatus").innerText
    if (isNaN(Number(form.cargoMass.value))){
       alert(`Cargo Mass (kg) must be submitted as a numerical value`);
-      cargoStatus = `Cargo weight "${form.cargoMass.value}" invalid`
+      document.getElementById("cargoStatus").innerText = `Cargo weight "${form.cargoMass.value}" invalid`
       launchNotReady(e)
    } else if (Number(form.cargoMass.value) < 10000){  
-      cargoStatus = `Cargo weight ${form.cargoMass.value}kg low enough for launch`;
+      document.getElementById("cargoStatus").innerText = `Cargo weight ${form.cargoMass.value}kg low enough for launch`;
       e.preventDefault(); 
-
    } else {
-      cargoStatus = `Cargo weight ${form.cargoMass.value}kg exceeds shuttle limits for launch`;
+      document.getElementById("cargoStatus").innerText = `Cargo weight ${form.cargoMass.value}kg exceeds shuttle limits for launch`;
       launchNotReady(e);
    };
    
 });
+
+//get planet data for Planets
+const fetchPlanets = async () => { 
+   try {
+      const response = await fetch('https://handlers.education.launchcode.org/static/planets.json');
+      let planets = await response.json();
+      return planets
+   }
+   catch (err) {
+      console.error(err);
+   };
+};
+
+//updates planetary info
+let missionBriefUpdate = async () => {
+   let planets = await fetchPlanets()
+   let randomNumber = Math.floor(Math.random() * planets.length)
+   let planet = planets[randomNumber]
+   document.getElementById("missionTarget").innerHTML = 
+         `<h2>Mission Destination</h2>
+         <ol>
+         <li>Name: ${planet.name}</li>
+         <li>Diameter: ${planet.diameter}</li>
+         <li>Star: ${planet.star}</li>
+         <li>Distance from Earth: ${planet.distance}</li>
+         <li>Number of Moons: ${planet.moons}</li>
+         </ol>
+         <img src="${planet.image}"></img>`
+}
+missionBriefUpdate()
